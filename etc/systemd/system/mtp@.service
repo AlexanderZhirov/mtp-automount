@@ -1,0 +1,14 @@
+[Unit]
+Description=Mounting MTP devices
+BindsTo=dev-%i.device
+After=dev-%i.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+TimeoutStartSec=30
+ExecStart=/etc/udev/scripts/mtp.sh add %I
+ExecStop=/etc/udev/scripts/mtp.sh remove %I
+
+[Install]
+WantedBy=dev-%i.device

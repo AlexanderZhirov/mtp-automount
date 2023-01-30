@@ -1,0 +1,32 @@
+diff --git a/51-android.rules b/51-android.rules
+index d75ddb3..65f235c 100644
+--- a/51-android.rules
++++ b/51-android.rules
+@@ -9,7 +9,7 @@
+ # https://github.com/M0Rf30/android-udev-rules
+ 
+ # Skip testing for android devices if device is not add, or usb
+-ACTION!="add", ACTION!="bind", GOTO="android_usb_rules_end"
++ENV{DEVTYPE}!="usb_device", GOTO="android_usb_rules_end"
+ SUBSYSTEM!="usb", GOTO="android_usb_rules_end"
+ 
+ # Skip testing for unexpected devices like hubs, controllers or printers
+@@ -820,13 +820,16 @@ GOTO="android_usb_rule_match"
+ LABEL="not_ZTE"
+ 
+ # ZUK
+-ATTR{idVendor}=="2b4c", ENV{adb_user}="yes"
++ATTR{idVendor}=="2b4c", ENV{adb_user}="yes", GOTO="android_usb_rule_match"
+ 
+ # Verifone
+-ATTR{idVendor}=="11ca", ENV{adb_user}="yes"
++ATTR{idVendor}=="11ca", ENV{adb_user}="yes", GOTO="android_usb_rule_match"
++
++GOTO="android_usb_rules_end"
+ 
+ # Skip other vendor tests
+ LABEL="android_usb_rule_match"
++TAG+="systemd", SYMLINK+="$env{ID_VENDOR}_$env{ID_MODEL}_$env{ID_REVISION}", ENV{SYSTEMD_WANTS}+="mtp@$env{ID_VENDOR}_$env{ID_MODEL}_$env{ID_REVISION}.service"
+ 
+ # Symlink shortcuts to reduce code in tests above
+ ENV{adb_adbfast}=="yes", ENV{adb_adb}="yes", ENV{adb_fast}="yes"
